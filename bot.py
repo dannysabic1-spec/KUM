@@ -1,6 +1,11 @@
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Promijeni radni direktorij na folder bota da bi discord.py mogao naći 'cogs'
+_BOT_DIR = os.path.dirname(os.path.abspath(__file__))
+os.chdir(_BOT_DIR)
+if _BOT_DIR not in sys.path:
+    sys.path.insert(0, _BOT_DIR)
 
 import discord
 from discord.ext import commands
