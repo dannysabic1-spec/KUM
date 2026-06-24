@@ -1,8 +1,6 @@
 import discord
 from discord.ext import commands
 import random
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from cogs.ekonomija import dodaj_novac, get_balans
 
 RIJECI_5 = [
