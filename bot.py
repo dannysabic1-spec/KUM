@@ -131,9 +131,32 @@ async def help_cmd(ctx):
     await ctx.send(embed=embed)
 
 async def load_extensions():
+    import importlib.util
+    import types
+
     moduli = ['ekonomija', 'kaladont', 'vjesalo', 'slots', 'wordle', 'leveling', 'moderation']
+    _cogs_dir = os.path.join(_BOT_DIR, 'cogs')
+
+    # Registriraj 'cogs' kao paket u sys.modules da bi međusobni importi radili
+    if 'cogs' not in sys.modules:
+        pkg = types.ModuleType('cogs')
+        pkg.__path__ = [_cogs_dir]
+        pkg.__package__ = 'cogs'
+        pkg.__file__ = os.path.join(_cogs_dir, '__init__.py')
+        sys.modules['cogs'] = pkg
+
     for filename in moduli:
-        await bot.load_extension(f'cogs.{filename}')
+        filepath = os.path.join(_cogs_dir, f'{filename}.py')
+        mod_name = f'cogs.{filename}'
+
+        spec = importlib.util.spec_from_file_location(mod_name, filepath)
+        module = importlib.util.module_from_spec(spec)
+        module.__package__ = 'cogs'
+        sys.modules[mod_name] = module
+        spec.loader.exec_module(module)
+
+        # Pozovi setup() funkciju kao što discord.py to radi
+        await module.setup(bot)
         print(f'  ✔ Učitan modul: {filename}')
 
 async def main():
